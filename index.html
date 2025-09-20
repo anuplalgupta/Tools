@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retirement Calculator</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🏖️ Retirement Calculator</h1>
+            <p>Plan your retirement and calculate how much you need to save</p>
+        </header>
+
+        <div class="calculator-wrapper">
+            <div class="input-section">
+                <h2>Personal Information</h2>
+                
+                <div class="input-group">
+                    <label for="currentAge">Current Age</label>
+                    <input type="number" id="currentAge" min="18" max="100" value="30" />
+                    <span class="unit">years</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="retirementAge">Retirement Age</label>
+                    <input type="number" id="retirementAge" min="40" max="100" value="60" />
+                    <span class="unit">years</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="lifeExpectancy">Life Expectancy</label>
+                    <input type="number" id="lifeExpectancy" min="60" max="120" value="85" />
+                    <span class="unit">years</span>
+                </div>
+
+                <h2>Financial Information</h2>
+
+                <div class="input-group">
+                    <label for="monthlyExpenses">Current Monthly Expenses</label>
+                    <input type="number" id="monthlyExpenses" min="0" value="50000" />
+                    <span class="unit">₹</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="inflationRate">Expected Inflation Rate</label>
+                    <input type="number" id="inflationRate" min="0" max="20" step="0.1" value="6" />
+                    <span class="unit">%</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="postRetirementInflation">Post-Retirement Inflation</label>
+                    <input type="number" id="postRetirementInflation" min="0" max="20" step="0.1" value="5" />
+                    <span class="unit">%</span>
+                </div>
+
+                <h2>Investment Details</h2>
+
+                <div class="input-group">
+                    <label for="currentSavings">Current Retirement Savings</label>
+                    <input type="number" id="currentSavings" min="0" value="500000" />
+                    <span class="unit">₹</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="expectedReturns">Expected Returns (Pre-Retirement)</label>
+                    <input type="number" id="expectedReturns" min="0" max="30" step="0.1" value="12" />
+                    <span class="unit">%</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="postRetirementReturns">Expected Returns (Post-Retirement)</label>
+                    <input type="number" id="postRetirementReturns" min="0" max="20" step="0.1" value="8" />
+                    <span class="unit">%</span>
+                </div>
+
+                <h2>Additional Provisions</h2>
+
+                <div class="input-group">
+                    <label for="additionalExpenses">Annual Travel/Healthcare Budget</label>
+                    <input type="number" id="additionalExpenses" min="0" value="100000" />
+                    <span class="unit">₹</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="additionalInflation">Travel/Healthcare Inflation Rate</label>
+                    <input type="number" id="additionalInflation" min="0" max="20" step="0.1" value="7" />
+                    <span class="unit">%</span>
+                </div>
+
+                <button class="calculate-btn" onclick="calculateRetirement()">Calculate Retirement Corpus</button>
+            </div>
+
+            <div class="results-section">
+                <h2>Retirement Planning Results</h2>
+                
+                <div class="result-card">
+                    <h3>Time to Retirement</h3>
+                    <p class="result-value" id="yearsToRetirement">-</p>
+                    <p class="result-label">Years</p>
+                </div>
+
+                <div class="result-card highlight">
+                    <h3>Required Retirement Corpus</h3>
+                    <p class="result-value" id="requiredCorpus">-</p>
+                    <p class="result-label">Total Amount Needed</p>
+                </div>
+
+                <div class="result-card">
+                    <h3>Monthly Expenses at Retirement</h3>
+                    <p class="result-value" id="futureMonthlyExpenses">-</p>
+                    <p class="result-label">Adjusted for Inflation</p>
+                </div>
+
+                <div class="result-card">
+                    <h3>Current Savings Future Value</h3>
+                    <p class="result-value" id="futureSavingsValue">-</p>
+                    <p class="result-label">At Retirement</p>
+                </div>
+
+                <div class="result-card">
+                    <h3>Additional Corpus Needed</h3>
+                    <p class="result-value" id="additionalCorpus">-</p>
+                    <p class="result-label">Gap to Fill</p>
+                </div>
+
+                <div class="result-card primary">
+                    <h3>Monthly SIP Required</h3>
+                    <p class="result-value" id="monthlySIP">-</p>
+                    <p class="result-label">To Meet Retirement Goal</p>
+                </div>
+
+                <div class="result-card">
+                    <h3>Annual Investment Required</h3>
+                    <p class="result-value" id="annualInvestment">-</p>
+                    <p class="result-label">Yearly Contribution</p>
+                </div>
+
+                <div class="result-card">
+                    <h3>Lumpsum Investment Required</h3>
+                    <p class="result-value" id="lumpsumRequired">-</p>
+                    <p class="result-label">One-Time Investment</p>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="retirementChart"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="corpusGrowthChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <footer>
+            <p>💡 <strong>Disclaimer:</strong> This calculator provides estimates based on the inputs provided. Actual results may vary based on market conditions and other factors. Please consult a financial advisor for personalized advice.</p>
+        </footer>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

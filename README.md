@@ -4,6 +4,21 @@
 
 This repository contains a collection of useful tools and utilities. Each tool is added through individual commits with detailed descriptions explaining its purpose, functionality, and usage.
 
+## Current Tools
+
+### 1. Retirement Calculator
+A comprehensive web-based retirement planning calculator that helps you determine how much you need to save for retirement.
+
+**Features:**
+- Calculate retirement corpus based on current age, retirement age, and life expectancy
+- Account for inflation (pre and post-retirement)
+- Factor in current savings and expected returns
+- Calculate required monthly SIP, annual investment, or lumpsum amount
+- Visual charts showing corpus breakdown and growth over time
+- Responsive design for mobile and desktop
+
+**Live Demo:** [View Calculator](https://anuplalgupta.github.io/Tools/)
+
 ## Organization
 
 Tools in this repository are organized by commit history. Each commit that adds a new tool includes:
