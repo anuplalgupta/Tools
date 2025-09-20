@@ -2,6 +2,12 @@
 let retirementChart = null;
 let corpusGrowthChart = null;
 
+// Toggle about section
+function toggleAbout() {
+    const aboutSection = document.getElementById('aboutSection');
+    aboutSection.classList.toggle('active');
+}
+
 // Format currency
 function formatCurrency(amount) {
     if (amount >= 10000000) {
@@ -35,6 +41,18 @@ function calculateSIP(targetAmount, rate, years) {
     return targetAmount * monthlyRate / (Math.pow(1 + monthlyRate, months) - 1);
 }
 
+// Calculate future value of SIP
+function calculateSIPFutureValue(monthlyAmount, rate, years) {
+    const monthlyRate = rate / 100 / 12;
+    const months = years * 12;
+    
+    if (monthlyRate === 0) {
+        return monthlyAmount * months;
+    }
+    
+    return monthlyAmount * ((Math.pow(1 + monthlyRate, months) - 1) / monthlyRate) * (1 + monthlyRate);
+}
+
 // Calculate corpus required for retirement
 function calculateRetirementCorpus(monthlyExpense, yearsInRetirement, inflationRate, returnRate) {
     let totalCorpus = 0;
@@ -51,18 +69,33 @@ function calculateRetirementCorpus(monthlyExpense, yearsInRetirement, inflationR
 
 // Main calculation function
 function calculateRetirement() {
-    // Get input values
+    // Get input values - Personal Info
     const currentAge = parseFloat(document.getElementById('currentAge').value);
     const retirementAge = parseFloat(document.getElementById('retirementAge').value);
     const lifeExpectancy = parseFloat(document.getElementById('lifeExpectancy').value);
+    
+    // Expense Planning
     const monthlyExpenses = parseFloat(document.getElementById('monthlyExpenses').value);
+    const expenseReduction = parseFloat(document.getElementById('expenseReduction').value) || 20;
     const inflationRate = parseFloat(document.getElementById('inflationRate').value);
     const postRetirementInflation = parseFloat(document.getElementById('postRetirementInflation').value);
-    const currentSavings = parseFloat(document.getElementById('currentSavings').value);
+    
+    // Investment Portfolio
+    const currentSavings = parseFloat(document.getElementById('currentSavings').value) || 0;
+    const existingEPF = parseFloat(document.getElementById('existingEPF').value) || 0;
+    const monthlyEPF = parseFloat(document.getElementById('monthlyEPF').value) || 0;
+    const existingSIP = parseFloat(document.getElementById('existingSIP').value) || 0;
+    
+    // Expected Returns
     const expectedReturns = parseFloat(document.getElementById('expectedReturns').value);
+    const epfReturns = parseFloat(document.getElementById('epfReturns').value) || 8;
     const postRetirementReturns = parseFloat(document.getElementById('postRetirementReturns').value);
-    const additionalExpenses = parseFloat(document.getElementById('additionalExpenses').value);
-    const additionalInflation = parseFloat(document.getElementById('additionalInflation').value);
+    
+    // Additional Provisions
+    const additionalExpenses = parseFloat(document.getElementById('additionalExpenses').value) || 0;
+    const additionalInflation = parseFloat(document.getElementById('additionalInflation').value) || 7;
+    const emergencyFund = parseFloat(document.getElementById('emergencyFund').value) || 12;
+    const legacyAmount = parseFloat(document.getElementById('legacyAmount').value) || 0;
     
     // Validate inputs
     if (retirementAge <= currentAge) {
@@ -79,34 +112,59 @@ function calculateRetirement() {
     const yearsToRetirement = retirementAge - currentAge;
     const yearsInRetirement = lifeExpectancy - retirementAge;
     
+    // Apply expense reduction for retirement
+    const retirementMonthlyExpenses = monthlyExpenses * (1 - expenseReduction / 100);
+    
     // Calculate future monthly expenses at retirement (adjusted for inflation)
-    const futureMonthlyExpenses = futureValue(monthlyExpenses, inflationRate, yearsToRetirement);
+    const futureMonthlyExpenses = futureValue(retirementMonthlyExpenses, inflationRate, yearsToRetirement);
     
     // Calculate future value of additional expenses
     const futureAdditionalExpenses = futureValue(additionalExpenses, additionalInflation, yearsToRetirement);
     
+    // Calculate emergency fund requirement at retirement
+    const emergencyCorpus = futureMonthlyExpenses * emergencyFund;
+    
+    // Calculate future value of legacy amount
+    const futureLegacyAmount = futureValue(legacyAmount, inflationRate, yearsToRetirement);
+    
     // Calculate total annual expenses at retirement
     const annualExpensesAtRetirement = (futureMonthlyExpenses * 12) + futureAdditionalExpenses;
     
-    // Calculate retirement corpus needed
-    const requiredCorpus = calculateRetirementCorpus(
+    // Calculate retirement corpus needed for expenses
+    const expenseCorpus = calculateRetirementCorpus(
         futureMonthlyExpenses + (futureAdditionalExpenses / 12),
         yearsInRetirement,
         postRetirementInflation,
         postRetirementReturns
     );
     
-    // Calculate future value of current savings
+    // Total corpus required = expense corpus + emergency fund + legacy
+    const requiredCorpus = expenseCorpus + emergencyCorpus + futureLegacyAmount;
+    
+    // Calculate future value of existing investments
     const futureSavingsValue = futureValue(currentSavings, expectedReturns, yearsToRetirement);
     
-    // Calculate additional corpus needed
-    const additionalCorpus = Math.max(0, requiredCorpus - futureSavingsValue);
+    // Calculate future value of EPF
+    const futureEPFValue = futureValue(existingEPF, epfReturns, yearsToRetirement) +
+        calculateSIPFutureValue(monthlyEPF, epfReturns, yearsToRetirement);
     
-    // Calculate monthly SIP required
-    const monthlySIP = calculateSIP(additionalCorpus, expectedReturns, yearsToRetirement);
+    // Calculate future value of existing SIPs
+    const futureExistingSIPValue = calculateSIPFutureValue(existingSIP, expectedReturns, yearsToRetirement);
+    
+    // Total future value of all existing investments
+    const totalFutureInvestments = futureSavingsValue + futureEPFValue + futureExistingSIPValue;
+    
+    // Calculate additional corpus needed
+    const additionalCorpus = Math.max(0, requiredCorpus - totalFutureInvestments);
+    
+    // Calculate additional monthly SIP required
+    const additionalMonthlySIP = calculateSIP(additionalCorpus, expectedReturns, yearsToRetirement);
+    
+    // Total monthly investment (existing + additional)
+    const totalMonthlySIP = existingSIP + monthlyEPF + additionalMonthlySIP;
     
     // Calculate annual investment required
-    const annualInvestment = monthlySIP * 12;
+    const annualInvestment = additionalMonthlySIP * 12;
     
     // Calculate lumpsum investment required
     const lumpsumRequired = presentValue(additionalCorpus, expectedReturns, yearsToRetirement);
@@ -115,9 +173,9 @@ function calculateRetirement() {
     document.getElementById('yearsToRetirement').textContent = yearsToRetirement.toFixed(0);
     document.getElementById('requiredCorpus').textContent = formatCurrency(requiredCorpus);
     document.getElementById('futureMonthlyExpenses').textContent = formatCurrency(futureMonthlyExpenses);
-    document.getElementById('futureSavingsValue').textContent = formatCurrency(futureSavingsValue);
+    document.getElementById('futureSavingsValue').textContent = formatCurrency(totalFutureInvestments);
     document.getElementById('additionalCorpus').textContent = formatCurrency(additionalCorpus);
-    document.getElementById('monthlySIP').textContent = formatCurrency(monthlySIP);
+    document.getElementById('monthlySIP').textContent = formatCurrency(additionalMonthlySIP);
     document.getElementById('annualInvestment').textContent = formatCurrency(annualInvestment);
     document.getElementById('lumpsumRequired').textContent = formatCurrency(lumpsumRequired);
     
@@ -128,13 +186,13 @@ function calculateRetirement() {
     });
     
     // Create charts
-    createRetirementChart(requiredCorpus, futureSavingsValue, additionalCorpus);
+    createRetirementChart(requiredCorpus, totalFutureInvestments, additionalCorpus);
     createCorpusGrowthChart(
         currentAge,
         retirementAge,
         lifeExpectancy,
-        currentSavings,
-        monthlySIP,
+        currentSavings + existingEPF,
+        totalMonthlySIP,
         expectedReturns,
         postRetirementReturns,
         requiredCorpus

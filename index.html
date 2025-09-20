@@ -3,16 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retirement Calculator</title>
+    <title>ALGo Tools - Retirement Calculator</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <div class="container">
         <header>
+            <div class="logo">
+                <span class="logo-text">ALGo</span>
+                <span class="logo-tools">Tools</span>
+            </div>
             <h1>🏖️ Retirement Calculator</h1>
-            <p>Plan your retirement and calculate how much you need to save</p>
+            <p>Plan your financial independence and escape the rat race</p>
+            <div class="about-link">
+                <button onclick="toggleAbout()">About ALGo Tools</button>
+            </div>
         </header>
+
+        <div id="aboutSection" class="about-section">
+            <div class="about-content">
+                <h2>About ALGo Tools</h2>
+                <div class="about-text">
+                    <p><strong>ALGo Tools</strong> is created by <strong>Anup Lal Gupta</strong>, a software engineer at Meta who is passionate about financial education and helping people achieve financial independence.</p>
+                    <p>Having witnessed the challenges of the rat race firsthand, I believe everyone should understand personal finance to make informed decisions about their future. This calculator is designed to help you:</p>
+                    <ul>
+                        <li>Understand exactly how much money you need for retirement</li>
+                        <li>Plan your investments strategically</li>
+                        <li>Escape the rat race with proper financial planning</li>
+                        <li>Achieve financial independence on your terms</li>
+                    </ul>
+                    <p class="quote">"Financial freedom is not about being rich, it's about having enough to live the life you want without being dependent on a paycheck."</p>
+                </div>
+                <button class="close-about" onclick="toggleAbout()">Close</button>
+            </div>
+        </div>
 
         <div class="calculator-wrapper">
             <div class="input-section">
@@ -36,58 +64,105 @@
                     <span class="unit">years</span>
                 </div>
 
-                <h2>Financial Information</h2>
+                <h2>Expense Planning</h2>
 
                 <div class="input-group">
-                    <label for="monthlyExpenses">Current Monthly Expenses</label>
+                    <label for="monthlyExpenses">Current Monthly Household Expenses</label>
                     <input type="number" id="monthlyExpenses" min="0" value="50000" />
                     <span class="unit">₹</span>
                 </div>
 
                 <div class="input-group">
-                    <label for="inflationRate">Expected Inflation Rate</label>
+                    <label for="expenseReduction">Expense Reduction Post-Retirement</label>
+                    <input type="number" id="expenseReduction" min="0" max="50" step="1" value="20" />
+                    <span class="unit">%</span>
+                    <small>Typically expenses reduce by 20-30% after retirement</small>
+                </div>
+
+                <div class="input-group">
+                    <label for="inflationRate">Pre-Retirement Inflation Rate</label>
                     <input type="number" id="inflationRate" min="0" max="20" step="0.1" value="6" />
                     <span class="unit">%</span>
                 </div>
 
                 <div class="input-group">
-                    <label for="postRetirementInflation">Post-Retirement Inflation</label>
+                    <label for="postRetirementInflation">Post-Retirement Inflation Rate</label>
                     <input type="number" id="postRetirementInflation" min="0" max="20" step="0.1" value="5" />
                     <span class="unit">%</span>
                 </div>
 
-                <h2>Investment Details</h2>
+                <h2>Investment Portfolio</h2>
 
                 <div class="input-group">
-                    <label for="currentSavings">Current Retirement Savings</label>
+                    <label for="currentSavings">Current Retirement Corpus</label>
                     <input type="number" id="currentSavings" min="0" value="500000" />
                     <span class="unit">₹</span>
                 </div>
 
                 <div class="input-group">
-                    <label for="expectedReturns">Expected Returns (Pre-Retirement)</label>
+                    <label for="existingEPF">Current EPF/PPF Balance</label>
+                    <input type="number" id="existingEPF" min="0" value="200000" />
+                    <span class="unit">₹</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="monthlyEPF">Monthly EPF/PPF Contribution</label>
+                    <input type="number" id="monthlyEPF" min="0" value="5000" />
+                    <span class="unit">₹</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="existingSIP">Current Monthly SIP Amount</label>
+                    <input type="number" id="existingSIP" min="0" value="10000" />
+                    <span class="unit">₹</span>
+                </div>
+
+                <h2>Expected Returns</h2>
+
+                <div class="input-group">
+                    <label for="expectedReturns">Growth Rate Pre-Retirement (Equity/MF)</label>
                     <input type="number" id="expectedReturns" min="0" max="30" step="0.1" value="12" />
                     <span class="unit">%</span>
                 </div>
 
                 <div class="input-group">
-                    <label for="postRetirementReturns">Expected Returns (Post-Retirement)</label>
+                    <label for="epfReturns">EPF/PPF Expected Returns</label>
+                    <input type="number" id="epfReturns" min="0" max="15" step="0.1" value="8" />
+                    <span class="unit">%</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="postRetirementReturns">Expected Returns Post-Retirement</label>
                     <input type="number" id="postRetirementReturns" min="0" max="20" step="0.1" value="8" />
                     <span class="unit">%</span>
+                    <small>Conservative portfolio after retirement</small>
                 </div>
 
                 <h2>Additional Provisions</h2>
 
                 <div class="input-group">
-                    <label for="additionalExpenses">Annual Travel/Healthcare Budget</label>
-                    <input type="number" id="additionalExpenses" min="0" value="100000" />
+                    <label for="additionalExpenses">Annual Travel/Healthcare/Emergency Budget</label>
+                    <input type="number" id="additionalExpenses" min="0" value="200000" />
                     <span class="unit">₹</span>
                 </div>
 
                 <div class="input-group">
                     <label for="additionalInflation">Travel/Healthcare Inflation Rate</label>
-                    <input type="number" id="additionalInflation" min="0" max="20" step="0.1" value="7" />
+                    <input type="number" id="additionalInflation" min="0" max="20" step="0.1" value="8" />
                     <span class="unit">%</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="emergencyFund">Emergency Fund (Months of Expenses)</label>
+                    <input type="number" id="emergencyFund" min="0" max="24" value="12" />
+                    <span class="unit">months</span>
+                </div>
+
+                <div class="input-group">
+                    <label for="legacyAmount">Legacy/Inheritance Goal</label>
+                    <input type="number" id="legacyAmount" min="0" value="5000000" />
+                    <span class="unit">₹</span>
+                    <small>Amount to leave for heirs</small>
                 </div>
 
                 <button class="calculate-btn" onclick="calculateRetirement()">Calculate Retirement Corpus</button>
